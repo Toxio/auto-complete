@@ -36,3 +36,17 @@
 .autocomplete-item.highlighted{
     background-color: #f8f8f8;
 }
+
+.autocomplete-clear-btn {
+    position: absolute;
+    right: -15px;
+    top: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.autocomplete-clear-icon {
+    font-size: 16px;
+    color: grey;
+}

@@ -1,6 +1,6 @@
-import './App.css'
-import AutoComplete from "./components/autoComplete/AutoComplete.tsx";
 import { useState } from "react";
+import AutoComplete from "./components/autoComplete/AutoComplete.tsx";
+import './App.css'
 
 function App() {
   const [search, setSearch] = useState('');

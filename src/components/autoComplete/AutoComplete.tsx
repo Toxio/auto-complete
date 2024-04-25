@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDebounce } from "../../hooks/useDebounce.ts";
 import './AutoComplete.css';
 
@@ -8,7 +8,7 @@ type AutoCompleteProps = {
   placeholder?: string;
 };
 
-const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeholder }) => {
+function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -88,6 +88,14 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
     );
   };
 
+  const clearInput = () => {
+    setInput('');
+    setSuggestions([]);
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+    onSelect('')
+  };
+
   return (
     <div className="autocomplete-container" ref={containerRef}>
       <input
@@ -100,6 +108,11 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
         autoComplete="off"
         placeholder={placeholder || 'Type to search...'}
       />
+      {input && (
+        <button className="autocomplete-clear-btn" onClick={clearInput}>
+          <span className="autocomplete-clear-icon">x</span>
+        </button>
+      )}
       {isOpen && suggestions.length > 0 && (
         <ul className="autocomplete-dropdown" ref={listRef}>
           {suggestions.map((suggestion, index) => (
@@ -115,6 +128,6 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
       )}
     </div>
   );
-};
+}
 
 export default AutoComplete;
