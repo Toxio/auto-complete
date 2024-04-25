@@ -32,6 +32,7 @@
     border-bottom: none;
 }
 
-.autocomplete-item:hover{
+.autocomplete-item:hover,
+.autocomplete-item.highlighted{
     background-color: #f8f8f8;
 }

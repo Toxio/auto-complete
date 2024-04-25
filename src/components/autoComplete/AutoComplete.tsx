@@ -8,12 +8,14 @@ type AutoCompleteProps = {
   placeholder?: string;
 };
 
-const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeholder, }) => {
+const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeholder }) => {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const debouncedInput = useDebounce(input, 300);
 
   useEffect(() => {
@@ -38,13 +40,14 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
+    setHighlightedIndex(-1);
   };
 
   const handleSelect = (suggestion: string) => {
     setInput(suggestion);
     setSuggestions([]);
     setIsOpen(false);
-
+    setHighlightedIndex(-1);
     onSelect(suggestion);
   };
 
@@ -52,9 +55,29 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
     setIsOpen(true);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setHighlightedIndex(prevIndex =>
+        prevIndex < suggestions.length - 1 ? prevIndex + 1 : prevIndex
+      );
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setHighlightedIndex(prevIndex =>
+        prevIndex > 0 ? prevIndex - 1 : 0
+      );
+    } else if (event.key === 'Enter' && highlightedIndex >= 0) {
+      handleSelect(suggestions[highlightedIndex]);
+    } else if (event.key === 'Escape') {
+      setIsOpen(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
   const handleClickOutside = (event: MouseEvent) => {
     if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
       setIsOpen(false);
+      setHighlightedIndex(-1);
     }
   };
 
@@ -73,15 +96,16 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({ fetchData, onSelect, placeh
         value={input}
         onChange={handleChange}
         onClick={handleInputClick}
+        onKeyDown={handleKeyDown}
         autoComplete="off"
         placeholder={placeholder || 'Type to search...'}
       />
       {isOpen && suggestions.length > 0 && (
-        <ul className="autocomplete-dropdown">
+        <ul className="autocomplete-dropdown" ref={listRef}>
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
-              className='autocomplete-item'
+              className={`autocomplete-item ${index === highlightedIndex ? 'highlighted' : ''}`}
               onClick={() => handleSelect(suggestion)}
             >
               {highlightText(suggestion)}
