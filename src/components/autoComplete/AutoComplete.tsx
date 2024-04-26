@@ -36,6 +36,7 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
 
   const handleFetchData = async (input: string) => {
     setIsLoading(true);
+    setSuggestions([])
     try {
       const data = await fetchData(input);
       setSuggestions(data);
