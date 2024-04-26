@@ -12,6 +12,7 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,8 +35,15 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
   }, [debouncedInput, isOpen]);
 
   const handleFetchData = async (input: string) => {
-    const data = await fetchData(input);
-    setSuggestions(data);
+    setIsLoading(true);
+    try {
+      const data = await fetchData(input);
+      setSuggestions(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,9 +121,10 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
           <span className="autocomplete-clear-icon">x</span>
         </button>
       )}
-      {isOpen && suggestions.length > 0 && (
+      {isOpen && (
         <ul className="autocomplete-dropdown" ref={listRef}>
-          {suggestions.map((suggestion, index) => (
+          {isLoading && <div className="autocomplete-loading">Loading...</div>}
+          {suggestions.length > 0 && suggestions.map((suggestion, index) => (
             <li
               key={index}
               className={`autocomplete-item ${index === highlightedIndex ? 'highlighted' : ''}`}

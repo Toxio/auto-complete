@@ -50,3 +50,9 @@
     font-size: 16px;
     color: grey;
 }
+
+.autocomplete-loading {
+    margin: 10px;
+    font-size: 16px;
+    color: grey;
+}
