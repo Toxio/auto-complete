@@ -63,6 +63,7 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
     setIsOpen(true);
   };
 
+  // This is for keyboard navigation for better accessibility.
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
@@ -89,6 +90,7 @@ function AutoComplete ({ fetchData, onSelect, placeholder }: AutoCompleteProps) 
     }
   };
 
+  // Highlight the text that matches the input
   const highlightText = (text: string) => {
     const parts = text.split(new RegExp(`(${input})`, 'gi'));
     return parts.map((part, index) =>
